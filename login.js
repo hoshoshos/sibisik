@@ -31,29 +31,25 @@ $('form').on('submit', function(e){
   }
 
   if(allValid) {
-    submitForm();
+    try {
+      $('#loading').show();
+      $("form :input").prop("disabled", true);
+  
+      google.script.run
+      .withSuccessHandler(loginFormSuccess)
+      .withFailureHandler(loginFormFailure)
+      .doLogin($("#userid").val(),$("#userbirth").val());
+  
+    } catch (e) {
+      toastr.error(e.message, e.name);
+      $("form :input").prop("disabled", false);
+      $("#loading").fadeOut();
+    }
   } else {
     let errMsg = '<ul><li>User ID antara 4 sampai 12 digit angka</li><li>Format tanggal lahir: hari-bulan-tahun</li></ul>';
     toastr.error(errMsg,'Isian Salah');
   }
 });
-
-function submitForm() {
-  try {
-    $('#loading').show();
-    $("form :input").prop("disabled", true);
-
-    google.script.run
-    .withSuccessHandler(loginFormSuccess)
-    .withFailureHandler(loginFormFailure)
-    .doLogin($("#userid").val(),$("#userbirth").val());
-
-  } catch (e) {
-    toastr.error(e.message, e.name);
-    $("form :input").prop("disabled", false);
-    $("#loading").fadeOut();
-  }
-}
 
 function loginFormSuccess(res){
   if(res.data == null) {
